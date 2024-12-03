@@ -700,6 +700,17 @@ export default function DexPage() {
 
     await tx.wait()
 
+    
+     const contract2 = new ethers.Contract(
+        AMM_CONTRACT_ADDRESS,
+        AMMContractABI,
+        signer  
+      );
+
+      let tx2 = await contract2.swap( TOKEN_A_ADDRESS, fromAmount) 
+
+      await tx2.wait()
+
 
 
     // Implement swap logic here
