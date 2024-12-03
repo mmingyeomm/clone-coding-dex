@@ -2,9 +2,16 @@
 
 import React, { useEffect, useState } from 'react'
 
+import { ethers } from "ethers";
 
 interface SwapIconProps {
   className?: string;
+}
+
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
 }
 
 const SwapIcon: React.FC<SwapIconProps> = ({ className }) => (
@@ -75,17 +82,82 @@ export default function DexPage() {
   const [token1Amount, setToken1Amount] = useState('')
   const [token2Amount, setToken2Amount] = useState('')
 
-  
+  const [account, setAccount] = useState<string>('')
+
+  let signer: any; 
+
+  let provider;
+ 
+  useEffect(() => {
+    const initializeEthereum = async () => {
+      if (window.ethereum == null) {
+
+        console.log(window.ethereum)
+
+        // If MetaMask is not installed, we use the default provider,
+        // which is backed by a variety of third-party services (such
+        // as INFURA). They do not have private keys installed,
+        // so they only have read-only access
+        console.log("MetaMask not installed; using read-only defaults")
+        provider = ethers.getDefaultProvider()
+    
+    } else {
+    
+        // Connect to the MetaMask EIP-1193 object. This is a standard
+        // protocol that allows Ethers access to make all read-only
+        // requests through MetaMask.
+        provider = new ethers.BrowserProvider(window.ethereum)
+    
+        // It also provides an opportunity to request access to write
+        // operations, which will be performed by the private key
+        // that MetaMask manages for the user.
+        signer = await provider.getSigner();
+    }
+    }
+
+    initializeEthereum()
+  }, [])
 
 
-  const handleSwap = () => {
+  const connectWallet = async () => {
+    if (!window.ethereum) {
+      alert('Please install MetaMask!')
+      return
+    }
+
+    try {
+      await window.ethereum.request({ method: 'eth_requestAccounts' })
+      const browserProvider = new ethers.BrowserProvider(window.ethereum)
+      const newSigner = await browserProvider.getSigner()
+
+      signer = newSigner
+      const address = await newSigner.getAddress()
+      setAccount(address)
+    } catch (err) {
+      console.error("Failed to connect wallet:", err)
+    }
+  }
+
+
+  const handleSwap = async () => {
+    if (!signer) {
+      connectWallet();
+      alert('Please connect your wallet first')
+      return
+    }
+
+    // Implement swap logic here
     alert('Swap functionality would be implemented here')
   }
 
-  const handleAddLiquidity = () => {
+  const handleAddLiquidity = async () => {
+    if (!signer) {
+      alert('Please connect your wallet first')
+      return
+    }
+    // Implement add liquidity logic here
     alert('Add liquidity functionality would be implemented here')
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-violet-900 to-black flex items-center justify-center p-4">
       <div className="bg-gray-900 rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-800">
