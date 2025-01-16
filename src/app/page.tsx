@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 
 import { ethers, Signer } from "ethers";
-
+import { SourceTextModule } from 'vm';
 
 
 interface SwapIconProps {
@@ -81,20 +81,17 @@ export default function DexPage() {
   const [activeTab, setActiveTab] = useState<'swap' | 'liquidity'>('swap')
   const [fromAmount, setFromAmount] = useState('')
   const [toAmount, setToAmount] = useState('')
+  const [signer, setSigner] = useState<Signer | null>(null);
   const [token1Amount, setToken1Amount] = useState('')
   const [token2Amount, setToken2Amount] = useState('')
-  const [signer, setSigner] = useState<Signer | null>(null);
-
   const [reserve0, setReserve0] = useState<string>('0');
   const [reserve1, setReserve1] = useState<string>('0');
 
-  const [account, setAccount] = useState<string>('')
-
-
-  let provider: any;
+  let provider:any;
  
   useEffect(() => {
     const initializeEthereum = async () => {
+
       
     }
 
@@ -102,12 +99,9 @@ export default function DexPage() {
   }, [])
 
   const fetchReserves = async () => {
-    
+      
   };
 
-  const connectWallet = async () => {
-    
-  }
 
 
   const handleSwap = async () => {
